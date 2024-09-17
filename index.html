@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Webpage</title>
+    <link href="https://fonts.googleapis.com/css2?family=Vollkorn&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: rgb(58, 58, 58);
+            font-family: "Vollkorn", serif;
+        }
+        h1, h2 {
+            font-family: "Vollkorn", serif;
+            color: rgb(119, 126, 98);
+        }
+        button {
+            font-family: "Vollkorn", serif;
+            color: rgb(156, 178, 182);
+            font-size: 30px;
+        }
+        p {
+            font-family: Verdana, Geneva, sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>My Sun</h1>
+        <button id="btn-aries">Aries</button>
+        <button id="btn-taurus">Taurus</button>
+        <button id="btn-gemini">Gemini</button>
+        <button id="btn-cancer">Cancer</button>
+        <button id="btn-leo">Leo</button>
+        <button id="btn-virgo">Virgo</button>
+        <button id="btn-libra">Libra</button>
+        <button id="btn-scorpio">Scorpio</button>
+        <button id="btn-sagittarius">Sagittarius</button>
+        <button id="btn-capricorn">Capricorn</button>
+        <button id="btn-aquarius">Aquarius</button>
+        <button id="btn-pisces">Pisces</button>
+
+        <h1>My Moon</h1>
+        <button id="btn-moon-aries">Aries</button>
+        <button id="btn-moon-taurus">Taurus</button>
+        <button id="btn-moon-gemini">Gemini</button>
+        <button id="btn-moon-cancer">Cancer</button>
+        <button id="btn-moon-leo">Leo</button>
+        <button id="btn-moon-virgo">Virgo</button>
+        <button id="btn-moon-libra">Libra</button>
+        <button id="btn-moon-scorpio">Scorpio</button>
+        <button id="btn-moon-sagittarius">Sagittarius</button>
+        <button id="btn-moon-capricorn">Capricorn</button>
+        <button id="btn-moon-aquarius">Aquarius</button>
+        <button id="btn-moon-pisces">Pisces</button>
+    </header>
+
+    <main>
+        <section>
+            <h2>Reading of the Day</h2>
+        </section>
+    </main>
+
+    <script>
+        const replicateProxy = "https://replicate-api-proxy.glitch.me";
+        const url = replicateProxy + "/create_n_get/";
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const sunSigns = ['aries', 'taurus', 'gemini', 'cancer', 'leo', 'virgo', 'libra', 'scorpio', 'sagittarius', 'capricorn', 'aquarius', 'pisces'];
+            const moonSigns = ['aries', 'taurus', 'gemini', 'cancer', 'leo', 'virgo', 'libra', 'scorpio'];
+
+            let selectedSunSign = '';  // To store selected sun sign
+            let selectedMoonSign = ''; // To store selected moon sign
+
+            function updateButtonEvents() {
+                // Event listeners for Sun sign buttons
+                sunSigns.forEach(sign => {
+                    const button = document.getElementById(`btn-${sign}`);
+                    if (button) {
+                        button.addEventListener('click', () => {
+                            selectedSunSign = sign;  // Store the selected Sun sign
+                            console.log(`Sun sign selected: ${selectedSunSign}`);
+                            generateReading();       // Call the function to generate reading
+                        });
+                    }
+                });
+
+                // Event listeners for Moon sign buttons
+                moonSigns.forEach(sign => {
+                    const button = document.getElementById(`btn-moon-${sign}`);
+                    if (button) {
+                        button.addEventListener('click', () => {
+                            selectedMoonSign = sign;  // Store the selected Moon sign
+                            console.log(`Moon sign selected: ${selectedMoonSign}`);
+                            generateReading();        // Call the function to generate reading
+                        });
+                    }
+                });
+            }
+
+            updateButtonEvents();  // Initialize button events
+
+            async function generateReading() {
+                if (selectedSunSign && selectedMoonSign) {
+                    const prompt = `Write a daily suggestion for a ${selectedSunSign} Sun, ${selectedMoonSign} Moon. In less than 15 words. Do not add any emojis. Could be sassy with a satirical twist.`;
+
+                    const myData = {
+                        "version": "v38pnx5d39rj20chzj0r79d660",
+                        "input": {
+                            prompt: prompt
+                        }
+                    };
+                    console.log("Making a Fetch Request", myData);
+
+                    try {
+                        const response = await fetch(url, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(myData)
+                        });
+
+                        const result = await response.json();
+                        console.log('API response:', result); // Log the full API response
+                        document.querySelector('h2').innerText = result.output || 'No reading available'; // Display result or fallback
+                    } catch (error) {
+                        console.error('Error:', error);
+                        document.querySelector('h2').innerText = 'Error fetching reading';
+                    }
+                } else {
+                    alert('Please select both a Sun and a Moon sign before generating your reading.');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
